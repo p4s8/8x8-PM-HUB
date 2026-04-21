@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html>
-<head><style>body{margin:0;overflow:hidden;}</style></head>
+<head>
+<style>
+body{margin:0;overflow:hidden;}
+#__8x8-chat-button-container-script_57167975869e1fde95838f4\.46210593,
+.cxButtonContainer,
+[id*="chat-button-container"] {
+    width:0 !important;
+    height:0 !important;
+    overflow:hidden !important;
+    opacity:0 !important;
+    position:absolute !important;
+}
+</style>
+</head>
 <body>
 <div id="__8x8-chat-button-container-script_57167975869e1fde95838f4.46210593"></div>
 <script type="text/javascript">
@@ -34,16 +47,13 @@
         function handleInitEvent(e){
             e.detail.init(config,cb);
             se.removeEventListener('init',handleInitEvent);
-            // Wait for button to render, click it, then hide it
             var tries=0;
             var poll=setInterval(function(){
-                // Find any clickable element in the button container
                 var container=document.getElementById('__8x8-chat-button-container-script_57167975869e1fde95838f4.46210593');
                 var btn=container&&container.querySelector('*[onclick],button,a,div[role="button"],img');
                 if(!btn&&container) btn=container.querySelector('*');
                 if(btn){
                     btn.click();
-                    // Hide the button after clicking
                     if(container) container.style.display='none';
                     clearInterval(poll);
                 } else if(++tries>100){clearInterval(poll);}
