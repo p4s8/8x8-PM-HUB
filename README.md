@@ -2,7 +2,7 @@
 <html>
 <head><style>body{margin:0;overflow:hidden;}</style></head>
 <body>
-<div id="__8x8-chat-button-container-script_57167975869e1fde95838f4.46210593" style="display:none"></div>
+<div id="__8x8-chat-button-container-script_57167975869e1fde95838f4.46210593"></div>
 <script type="text/javascript">
 (function(c,f,ef){
     var typeofC=Object.prototype.toString.call(c);
@@ -34,14 +34,19 @@
         function handleInitEvent(e){
             e.detail.init(config,cb);
             se.removeEventListener('init',handleInitEvent);
-            // Auto-click the chat button once rendered
+            // Wait for button to render, click it, then hide it
             var tries=0;
             var poll=setInterval(function(){
-                var btn=document.querySelector('.cxWindowButton')||
-                        document.querySelector('[id*="chat-button"]')||
-                        document.querySelector('button');
-                if(btn){btn.click();clearInterval(poll);}
-                else if(++tries>100){clearInterval(poll);}
+                // Find any clickable element in the button container
+                var container=document.getElementById('__8x8-chat-button-container-script_57167975869e1fde95838f4.46210593');
+                var btn=container&&container.querySelector('*[onclick],button,a,div[role="button"],img');
+                if(!btn&&container) btn=container.querySelector('*');
+                if(btn){
+                    btn.click();
+                    // Hide the button after clicking
+                    if(container) container.style.display='none';
+                    clearInterval(poll);
+                } else if(++tries>100){clearInterval(poll);}
             },150);
         }
         se.addEventListener('init',handleInitEvent);
