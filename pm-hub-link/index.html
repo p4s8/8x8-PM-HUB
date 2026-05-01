@@ -40,19 +40,32 @@ body{margin:0;overflow:hidden;background:#f5f5f5;}
         .catch(function(e){console.warn('Discovery failed',e);})
         .finally(function(){loadChat();});
 
-    // Force-center the chat iframe every 200ms (overrides widget positioning)
-    setInterval(function(){
+    function centerIframe(iframe){
+        iframe.style.setProperty('position', 'fixed', 'important');
+        iframe.style.setProperty('top', '50%', 'important');
+        iframe.style.setProperty('left', '50%', 'important');
+        iframe.style.setProperty('right', 'auto', 'important');
+        iframe.style.setProperty('bottom', 'auto', 'important');
+        iframe.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
+        iframe.style.setProperty('margin', '0', 'important');
+    }
+
+    // Watch for the chat iframe to appear, then enforce centering on every style change
+    var bodyObserver = new MutationObserver(function(){
         var iframe = document.querySelector('.__8x8Chat-Container');
         if (iframe) {
-            iframe.style.setProperty('position', 'fixed', 'important');
-            iframe.style.setProperty('top', '50%', 'important');
-            iframe.style.setProperty('left', '50%', 'important');
-            iframe.style.setProperty('right', 'auto', 'important');
-            iframe.style.setProperty('bottom', 'auto', 'important');
-            iframe.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
-            iframe.style.setProperty('margin', '0', 'important');
+            bodyObserver.disconnect();
+            centerIframe(iframe);
+            // Now watch the iframe itself — re-center every time its style changes
+            var iframeObserver = new MutationObserver(function(){
+                iframeObserver.disconnect();
+                centerIframe(iframe);
+                iframeObserver.observe(iframe, { attributes: true, attributeFilter: ['style'] });
+            });
+            iframeObserver.observe(iframe, { attributes: true, attributeFilter: ['style'] });
         }
-    }, 200);
+    });
+    bodyObserver.observe(document.body, { childList: true, subtree: true });
 
     function loadChat(){
         var se=document.createElement("script");
