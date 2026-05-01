@@ -2,16 +2,30 @@
 <html>
 <head>
 <style>
-body{margin:0;overflow:hidden;background:#f5f5f5;}
+html { background: #f5f5f5; }
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #f5f5f5;
+    opacity: 0;
+    transition: opacity 0.25s ease-in;
+}
+body.ready { opacity: 1; }
+
 #__8x8-chat-button-container-script_57167975869e1fde95838f4\.46210593,
 .cxButtonContainer,
 [id*="chat-button-container"] {
-    width:0 !important;
-    height:0 !important;
-    overflow:hidden !important;
-    opacity:0 !important;
-    position:absolute !important;
-    pointer-events:none !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    pointer-events: none !important;
+}
+
+.__8x8Chat-Container {
+    transition: none !important;
+    animation: none !important;
 }
 </style>
 </head>
@@ -48,24 +62,37 @@ body{margin:0;overflow:hidden;background:#f5f5f5;}
         iframe.style.setProperty('bottom', 'auto', 'important');
         iframe.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
         iframe.style.setProperty('margin', '0', 'important');
+        iframe.style.setProperty('transition', 'none', 'important');
+        iframe.style.setProperty('animation', 'none', 'important');
     }
 
-    // Watch for the chat iframe to appear, then enforce centering on every style change
+    var bodyShown = false;
+    function showBody(){
+        if (bodyShown) return;
+        bodyShown = true;
+        document.body.classList.add('ready');
+    }
+
     var bodyObserver = new MutationObserver(function(){
         var iframe = document.querySelector('.__8x8Chat-Container');
         if (iframe) {
             bodyObserver.disconnect();
             centerIframe(iframe);
-            // Now watch the iframe itself — re-center every time its style changes
+            // Watch the iframe for any future style changes and re-center instantly
             var iframeObserver = new MutationObserver(function(){
                 iframeObserver.disconnect();
                 centerIframe(iframe);
                 iframeObserver.observe(iframe, { attributes: true, attributeFilter: ['style'] });
             });
             iframeObserver.observe(iframe, { attributes: true, attributeFilter: ['style'] });
+            // Reveal the page after a brief settle time
+            setTimeout(showBody, 250);
         }
     });
     bodyObserver.observe(document.body, { childList: true, subtree: true });
+
+    // Safety: reveal page after 3 seconds even if iframe never appears
+    setTimeout(showBody, 3000);
 
     function loadChat(){
         var se=document.createElement("script");
