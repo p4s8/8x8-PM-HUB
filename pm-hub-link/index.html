@@ -56,8 +56,31 @@ body{margin:0;overflow:hidden;background:#f5f5f5;}
                 if(btn){
                     btn.click();
                     clearInterval(poll);
+                    // After chat opens, find and center it
+                    setTimeout(centerChatWindow, 500);
+                    setTimeout(centerChatWindow, 1500);
+                    setTimeout(centerChatWindow, 3000);
                 } else if(++tries>100){clearInterval(poll);}
             },150);
+        }
+        function centerChatWindow(){
+            var allElements = document.body.querySelectorAll('div, section, aside');
+            allElements.forEach(function(el){
+                var id = el.id || '';
+                var cls = (typeof el.className === 'string' ? el.className : '');
+                // Skip the hidden button container
+                if (id.indexOf('button-container') !== -1) return;
+                if (cls.indexOf('Button') !== -1) return;
+                var style = window.getComputedStyle(el);
+                // Find fixed-position elements that are big enough to be the chat
+                if (style.position === 'fixed' && el.offsetHeight > 300 && el.offsetWidth > 250) {
+                    el.style.setProperty('top', '50%', 'important');
+                    el.style.setProperty('left', '50%', 'important');
+                    el.style.setProperty('right', 'auto', 'important');
+                    el.style.setProperty('bottom', 'auto', 'important');
+                    el.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
+                }
+            });
         }
         se.addEventListener('init',handleInitEvent);
         se.addEventListener('customerror',function(e){ef&&ef(e);});
